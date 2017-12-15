@@ -447,7 +447,7 @@ string CryptoLib::repeatingKeyXOR(string str, string key)
 	int count = 0;
 
 	/*
-		1. perform XOR against each character of the message 
+		1. Perform XOR against each character of the message 
 		against each character of the key. 
 		So if the key was "ICE" and the message is "abcdefg",
 		it would be "a" against "I", then "b" against "C" and "c" against "E"
