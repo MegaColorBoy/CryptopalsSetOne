@@ -68,7 +68,7 @@ class CryptoLib
 		string singleByteXOR_V2(string str, char key);
 
 		//Bruteforce Single Byte XOR -- modified version of challenge 4 solution
-		string singleByteXOR_Bruteforce(string cipherBlock, char* outKey);
+		char singleByteXOR_Bruteforce_key(string cipherBlock);
 
 		//Guess Key length of the cipher -- used for Challenge 6
 		int guess_key_length(string str);

@@ -398,11 +398,12 @@ string CryptoLib::singleByteXOR_V2(string str, char key)
 }
 
 //Bruteforce Single XOR
-string CryptoLib::singleByteXOR_Bruteforce(string cipherBlock, char* outKey = NULL)
+char CryptoLib::singleByteXOR_Bruteforce_key(string cipherBlock)
 {
 	char key = 0;
-	string decodedMessage;
 	int maxCount=0;
+	string decodedMessage;
+
 	//We'll brute force the password, it's only 128 possibilities for a single char.
 	for(int i=0; i<128; i++){
 		string decodeAttempt = singleByteXOR_V2(cipherBlock,(char) i);
@@ -438,19 +439,17 @@ string CryptoLib::singleByteXOR_Bruteforce(string cipherBlock, char* outKey = NU
 	// 	cout<<"Message was: "<<decodedMessage<<endl;
 	// 	cout<<"Key was: "<<(int)key<<" '"<<key<<"'"<<endl;
 	
-	if(outKey!=NULL){
-		*outKey = key;
-	}
-	return decodedMessage;
+	return key;
 }
 
 //Guess Key length of the cipher
 int CryptoLib::guess_key_length(string cipherText)
 {
-	int keyval = -1;
+	int KEYSIZE = -1;
 	double leastNormalized = INT_MAX;
-
-	for(int i=2; i<41; i++)
+	
+	//Guess a keysize from 2 to 40
+	for(int i=2; i<=40; i++)
 	{
 		double normalize = 0.0f;
 
@@ -459,25 +458,28 @@ int CryptoLib::guess_key_length(string cipherText)
 
 		for(int j=0; j<bytes; j++)
 		{
-			string blockA = cipherText.substr(j*i, i);
-			string blockB = cipherText.substr((j+1)*i, i);
+			string blockA = cipherText.substr((j*i), i);
+			string blockB = cipherText.substr(((j+1)*i), i);
+		
+			//Calculate Hamming Distance between 2 strings
+			int edit_distance = hamming_distance(blockA, blockB);
 
-			int dist = hamming_distance(blockA, blockB);
-			normalize += ((double)dist)/((double)blockA.size());
+			normalize += ((double)edit_distance)/((double)blockA.size());
 		}
 
-		normalize = normalize/bytes;
+		//Now, take an average 
+		normalize /= bytes;
 
-		// cout << "KEY: " << i << " DISTANCE:  " << normalize << endl;
-
-		if(normalize < leastNormalized && normalize > 0)
+		//The key size that has the least edit distance is the key size required
+		if(normalize > 0 && normalize < leastNormalized)
 		{
-			keyval = i;
 			leastNormalized = normalize;
+			KEYSIZE = i;
 		}
 	}
 
-	return keyval;
+	//Return the key size
+	return KEYSIZE;
 }
 
 //Detect string with Single Byte XOR

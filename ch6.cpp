@@ -28,7 +28,8 @@ int main()
 	//Transpose the message based on keysize length
 	int blocks = message.size() / keyLength;
 
-	for(int i=0; i<keyLength; ++i){
+	for(int i=0; i<keyLength; ++i)
+	{
 		string block;
 		char indexKey='\0';
  
@@ -37,10 +38,8 @@ int main()
 			block += message.substr((j*keyLength) + i,1);
 		}
 
-		crypt.singleByteXOR_Bruteforce(block, &indexKey);
-
 		//Concatenate the selected characters, which will become the predicted key
-		key+=indexKey;
+		key += crypt.singleByteXOR_Bruteforce_key(block);
 	}
 
 	cout << "KEY: " << key << endl;
