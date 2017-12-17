@@ -9,6 +9,7 @@
 #include <vector>
 #include <math.h>
 #include <map>
+#include <openssl/aes.h>
 using namespace std;
 
 #define INT_MAX 1000000
