@@ -67,7 +67,7 @@ class CryptoLib
 		//Single Byte XOR V2 - modified version of the above method
 		string singleByteXOR_V2(string str, char key);
 
-		//Bruteforce Single Byte XOR -- modified version of challenge 4 solution
+		//Return the Single Byte XOR key via Bruteforce -- modified version of challenge 4
 		char singleByteXOR_Bruteforce_key(string cipherBlock);
 
 		//Guess Key length of the cipher -- used for Challenge 6

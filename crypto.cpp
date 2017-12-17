@@ -389,7 +389,8 @@ string CryptoLib::singleByteXOR(string str)
 //Single Byte XOR V2 - a better version
 string CryptoLib::singleByteXOR_V2(string str, char key)
 {
-	string newStr(str.size(),'\0'); //Wouldn't want to miss those null characters, eh?
+	//Don't forget to add a NULL character to the string, it broke when I didn't add it previously.
+	string newStr(str.size(),'\0'); 
 	
 	for(int i=0; i<str.size(); ++i){
 		newStr[i] = str[i] ^ key;
@@ -397,48 +398,48 @@ string CryptoLib::singleByteXOR_V2(string str, char key)
 	return newStr;
 }
 
-//Bruteforce Single XOR
+//Return the Single Byte XOR key via Bruteforce
 char CryptoLib::singleByteXOR_Bruteforce_key(string cipherBlock)
 {
 	char key = 0;
 	int maxCount=0;
 	string decodedMessage;
 
-	//We'll brute force the password, it's only 128 possibilities for a single char.
-	for(int i=0; i<128; i++){
-		string attempt = singleByteXOR_V2(cipherBlock,(char) i);
-	
-		// 	cout<<i<<". "<<attempt<<endl;
-		
-		/*
-			Look for letters that are in the range of
-			uppercase A to lowercase z.
+	//Brute force all 256 possibilities
+	for(int i=0; i<=256; i++)
+	{
+		char ch = (char) i;
 
-			If you find, increment the number of count
+		//Perform Single Byte XOR -- modified version
+		string attempt = singleByteXOR_V2(cipherBlock, ch);
+
+		// cout << "Message: " << attempt << endl;
+
+		int count = 0;
+		/*
+			Look for characters that are alphabetic and the space character,
+			if it finds, increment the counter
 		*/
-		int count=0;
-		for(int j=0; j<attempt.size(); ++j)
+		for(int j=0; j<attempt.size(); j++)
 		{
-			if(attempt[j]>=65 && attempt[j]<=122){ 
-				count++; 
-			}
-			if(attempt[j]==' '){
+			if((attempt[j] >= 65 && attempt[j] <= 122) || attempt[j] == ' ')
+			{
 				count++;
 			}
 		}
 
-		//The one that has the highest count, also has the highest key
-		if(maxCount < count)
+		//The one with the highest count, has the predicted key
+		if(count > maxCount)
 		{
 			maxCount = count;
-			decodedMessage = attempt;
-			key = (char) i;
+			key = ch;
+			// decrypted = attempt;
 		}
 	}
-	
-	// 	cout<<"Message was: "<<decodedMessage<<endl;
-	// 	cout<<"Key was: "<<(int)key<<" '"<<key<<"'"<<endl;
-	
+
+	// cout << "KEY: " << key << endl;
+	// cout << "MESSAGE: " << decrypted << endl;
+
 	return key;
 }
 
