@@ -407,7 +407,6 @@ string CryptoLib::singleByteXOR_Bruteforce(string cipherBlock, char* outKey = NU
 	for(int i=0; i<128; i++){
 		string decodeAttempt = singleByteXOR_V2(cipherBlock,(char) i);
 	
-		// if(printAttempt)
 		// 	cout<<i<<". "<<decodeAttempt<<endl;
 		
 		/*
@@ -436,10 +435,9 @@ string CryptoLib::singleByteXOR_Bruteforce(string cipherBlock, char* outKey = NU
 		}
 	}
 	
-	// if(printAttempt){
 	// 	cout<<"Message was: "<<decodedMessage<<endl;
 	// 	cout<<"Key was: "<<(int)key<<" '"<<key<<"'"<<endl;
-	// }
+	
 	if(outKey!=NULL){
 		*outKey = key;
 	}
