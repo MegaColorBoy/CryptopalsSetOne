@@ -406,9 +406,9 @@ char CryptoLib::singleByteXOR_Bruteforce_key(string cipherBlock)
 
 	//We'll brute force the password, it's only 128 possibilities for a single char.
 	for(int i=0; i<128; i++){
-		string decodeAttempt = singleByteXOR_V2(cipherBlock,(char) i);
+		string attempt = singleByteXOR_V2(cipherBlock,(char) i);
 	
-		// 	cout<<i<<". "<<decodeAttempt<<endl;
+		// 	cout<<i<<". "<<attempt<<endl;
 		
 		/*
 			Look for letters that are in the range of
@@ -417,12 +417,12 @@ char CryptoLib::singleByteXOR_Bruteforce_key(string cipherBlock)
 			If you find, increment the number of count
 		*/
 		int count=0;
-		for(int j=0; j<decodeAttempt.size(); ++j)
+		for(int j=0; j<attempt.size(); ++j)
 		{
-			if(decodeAttempt[j]>=65 && decodeAttempt[j]<=122){ 
+			if(attempt[j]>=65 && attempt[j]<=122){ 
 				count++; 
 			}
-			if(decodeAttempt[j]==' '){
+			if(attempt[j]==' '){
 				count++;
 			}
 		}
@@ -431,7 +431,7 @@ char CryptoLib::singleByteXOR_Bruteforce_key(string cipherBlock)
 		if(maxCount < count)
 		{
 			maxCount = count;
-			decodedMessage = decodeAttempt;
+			decodedMessage = attempt;
 			key = (char) i;
 		}
 	}
