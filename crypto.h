@@ -2,6 +2,7 @@
 //Abstract Class for the CryptoPals library
 #include <iostream>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <sstream>
 #include <fstream>
@@ -9,6 +10,8 @@
 #include <math.h>
 #include <map>
 using namespace std;
+
+#define INT_MAX 1000000
 
 class CryptoLib
 {
@@ -49,6 +52,9 @@ class CryptoLib
 		//Convert Base64 to Hex
 		string con_b64_2_hex(string str);
 
+		//Hamming Distance
+		int hamming_distance(string str1, string str2);
+
 		//Base64 Encoder - Version 2
 		string b64_encode(string str);
 
@@ -57,6 +63,15 @@ class CryptoLib
 
 		//Single Byte XOR
 		string singleByteXOR(string str);
+
+		//Single Byte XOR V2 - modified version of the above method
+		string singleByteXOR_V2(string str, char key);
+
+		//Bruteforce Single Byte XOR -- modified version of challenge 4 solution
+		string singleByteXOR_Bruteforce(string cipherBlock, char* outKey);
+
+		//Guess Key length of the cipher -- used for Challenge 6
+		int guess_key_length(string str);
 
 		//Detect Single Byte XOR
 		string detectSingleByteXOR(vector<int> maxV);

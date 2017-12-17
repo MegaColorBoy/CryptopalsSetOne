@@ -218,6 +218,20 @@ string CryptoLib::con_b64_2_hex(string str)
 	return hex;
 }
 
+//Hamming Distance
+int CryptoLib::hamming_distance(string str1, string str2)
+{
+	int count=0;
+	for(int i=0; i<str1.size(); ++i){
+		int partial = (str1[i]&0xFF) ^ (str2[i]&0xFF);
+		while(partial){
+			count += partial & 1;
+			partial = partial >>1;
+		}
+	}
+	return count;
+}
+
 //Base64 Encoder - Version 2
 string CryptoLib::b64_encode(string str)
 {
@@ -370,6 +384,102 @@ string CryptoLib::singleByteXOR(string str)
 
 	//8. Decoded message
 	return newStr;
+}
+
+//Single Byte XOR V2 - a better version
+string CryptoLib::singleByteXOR_V2(string str, char key)
+{
+	string newStr(str.size(),'\0'); //Wouldn't want to miss those null characters, eh?
+	
+	for(int i=0; i<str.size(); ++i){
+		newStr[i] = str[i] ^ key;
+	}
+	return newStr;
+}
+
+//Bruteforce Single XOR
+string CryptoLib::singleByteXOR_Bruteforce(string cipherBlock, char* outKey = NULL)
+{
+	char key = 0;
+	string decodedMessage;
+	int maxCount=0;
+	//We'll brute force the password, it's only 128 possibilities for a single char.
+	for(int i=0; i<128; i++){
+		string decodeAttempt = singleByteXOR_V2(cipherBlock,(char) i);
+	
+		// if(printAttempt)
+		// 	cout<<i<<". "<<decodeAttempt<<endl;
+		
+		/*
+			Look for letters that are in the range of
+			uppercase A to lowercase z.
+
+			If you find, increment the number of count
+		*/
+		int count=0;
+		for(int j=0; j<decodeAttempt.size(); ++j)
+		{
+			if(decodeAttempt[j]>=65 && decodeAttempt[j]<=122){ 
+				count++; 
+			}
+			if(decodeAttempt[j]==' '){
+				count++;
+			}
+		}
+
+		//The one that has the highest count, also has the highest key
+		if(maxCount < count)
+		{
+			maxCount = count;
+			decodedMessage = decodeAttempt;
+			key = (char) i;
+		}
+	}
+	
+	// if(printAttempt){
+	// 	cout<<"Message was: "<<decodedMessage<<endl;
+	// 	cout<<"Key was: "<<(int)key<<" '"<<key<<"'"<<endl;
+	// }
+	if(outKey!=NULL){
+		*outKey = key;
+	}
+	return decodedMessage;
+}
+
+//Guess Key length of the cipher
+int CryptoLib::guess_key_length(string cipherText)
+{
+	int keyval = -1;
+	double leastNormalized = INT_MAX;
+
+	for(int i=2; i<41; i++)
+	{
+		double normalize = 0.0f;
+
+		//Number of bytes per key size
+		int bytes = cipherText.size()/i;
+
+		for(int j=0; j<bytes; j++)
+		{
+			string blockA = cipherText.substr(j*i, i);
+			string blockB = cipherText.substr((j+1)*i, i);
+
+			int dist = hamming_distance(blockA, blockB);
+			normalize += ((double)dist)/((double)blockA.size());
+		}
+
+		normalize = normalize/bytes;
+
+		// cout << "KEY: " << i << " DISTANCE:  " << normalize << endl;
+
+		if(normalize < leastNormalized && normalize > 0)
+		{
+			keyval = i;
+			leastNormalized = normalize;
+		}
+	}
+
+	return keyval;
 }
 
 //Detect string with Single Byte XOR
