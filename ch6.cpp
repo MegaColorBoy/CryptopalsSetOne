@@ -33,7 +33,11 @@ int main()
 		string block;
 		char indexKey='\0';
  
- 		//scan the encrypted text to build the block with char at index i
+ 		/*
+ 			Transpose the message into blocks 
+ 			based on keysize and concatenate it 
+ 			into one string
+		*/
 		for(int j=0; j<blocks; j++){
 			block += message.substr((j*keyLength) + i,1);
 		}
