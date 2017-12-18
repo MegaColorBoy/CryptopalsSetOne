@@ -222,9 +222,11 @@ string CryptoLib::con_b64_2_hex(string str)
 int CryptoLib::hamming_distance(string str1, string str2)
 {
 	int count=0;
-	for(int i=0; i<str1.size(); ++i){
+	for(int i=0; i<str1.size(); i++)
+	{
 		int partial = (str1[i]&0xFF) ^ (str2[i]&0xFF);
-		while(partial){
+		while(partial)
+		{
 			count += partial & 1;
 			partial = partial >>1;
 		}
