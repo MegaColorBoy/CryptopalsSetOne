@@ -355,6 +355,67 @@ string CryptoLib::b64_decode(string str)
 	return newStr;
 }
 
+//Base64 Decoder - Version 3
+string CryptoLib::b64_to_ascii(string str)
+{
+	//First convert the base64 to it's respective values
+	// Use this as a reference to get the position of each character:
+	// ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+
+	for(int i=0; i<str.size(); i++)
+	{
+		char c = str[i];
+
+		if(str[i] >= 'A' && str[i] <= 'Z')
+		{
+			c = c - 65;
+		}
+		else if(str[i] >= 'a' && str[i] <= 'z')
+		{
+			c += -97 + 26;
+		}
+		else if(str[i] >= '0' && str[i] <= '9')
+		{
+			c += -48 + 52;
+		}
+		else if(str[i] == '+')
+		{
+			c = 62;
+		}
+		else if(str[i] == '/')
+		{
+			c = 63;
+		}
+
+		str[i] = c;
+	}
+
+	/*
+		Every 2 Base64 chars = 3 Hex characters i.e. 12 bits
+		But every 4 Base64 characters = 3 ASCII characters i.e. 24 bits
+		as it must be split into groups of 8 bits
+		
+		Read for reference: http://www.hcidata.info/base64.htm
+	*/
+
+	//In case we have a larger output
+	string ascii(str.size(), '\0');
+
+	int count = 0;
+	for(int i=0; i<str.size(); i+=4)
+	{
+		unsigned int bit_value = (str[i] << 18) + (str[i+1] << 12) + (str[i+2] << 8) + (str[i+3]);
+		ascii[count] = (char)((bit_value >> 16) & 0xFF);
+		ascii[count+1] = (char)((bit_value >> 8) & 0xFF);
+		ascii[count+2] = (char)((bit_value) & 0xFF);
+
+		// cout << std::hex << (int)ascii[i] << " " << (int)ascii[i+1] << " " << (int)ascii[i+2] << endl;
+		count += 3;
+	}
+
+	return ascii;
+}
+
 //Single Byte XOR
 string CryptoLib::singleByteXOR(string str)
 {
@@ -589,6 +650,44 @@ string CryptoLib::repeatingKeyXOR(string str, string key)
 	string final = "0";
 	final += con_ascii_2_hex(newStr);
 	return final;
+}
+
+//Detect ECB Mode in AES Cipher
+bool CryptoLib::detect_ecb_mode(string str, int keyLength)
+{
+	//Divide into equal amount of blocks
+	int blocks = str.size() / keyLength;
+
+	/*
+		Theory: the problem with ECB as I had mentioned
+		in the previous post, it uses the exact number of bytes of the ciphertext
+		to encrypt the plaintext repeatedly.
+
+		In that case, just do the reverse.
+
+		Divide it into equal amount of blocks, in this case, we
+		know the key is "YELLOW SUBMARINE", which is 16 bytes.
+
+		Then, all you have to do is take two substrings of a string and compare,
+		if they have the same string, we found it!
+	*/
+	for(int i=0; i<blocks; i++)
+	{
+		//Take a substring of x number of bytes
+		string strA = str.substr(i*keyLength, keyLength);
+
+		for(int j=i+1; j<blocks; j++)
+		{
+			//Take another substring of x number of bytes
+			string strB = str.substr(j*keyLength, keyLength);
+			if(strA == strB)
+			{
+				//Found
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 //Return Character frequency of a string

@@ -9,7 +9,7 @@
 #include <vector>
 #include <math.h>
 #include <map>
-#include <openssl/aes.h>
+// #include <openssl/aes.h>
 using namespace std;
 
 #define INT_MAX 1000000
@@ -62,6 +62,9 @@ class CryptoLib
 		//Base64 Decoder - Version 2
 		string b64_decode(string str);
 
+		//Base64 Decoder - Version 3
+		string b64_to_ascii(string str);
+
 		//Single Byte XOR
 		string singleByteXOR(string str);
 
@@ -82,6 +85,9 @@ class CryptoLib
 
 		//Repeating Key XOR
 		string repeatingKeyXOR(string str, string key);
+
+		//Detect ECB Mode in AES Cipher
+		bool detect_ecb_mode(string str, int keyLength);
 
 		//Return Character frequency of a string
 		map<char, int> frequency_table(string str);
